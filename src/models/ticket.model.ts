@@ -10,6 +10,11 @@ export class Ticket extends Entity {
   id?: number;
 
   @property({
+    type: 'string',
+  })
+  ticket?: string;
+
+  @property({
     type: 'number',
   })
   atencion?: number;
