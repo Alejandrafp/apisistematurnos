@@ -13,6 +13,8 @@ module.exports = app => {
 
   router.delete("/:id", tickets.delete);
 
+  router.delete("/delete/:id", tickets.deleteByTicket);
+
   router.delete("/", tickets.deleteAll);
 
   app.use("/api/tickets", router);

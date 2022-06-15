@@ -103,6 +103,88 @@ exports.update = (req, res) => {
     });
 };
 
+exports.updateByTicketFunction = (req,estado) => {
+  const id = req;
+  console.log("FUNCION " + id)
+ if(id) {
+  Ticket.findOne({ 'ticket': id }, function (err, ticket) {
+    if (err) return handleError(err);
+    console.log('%s %s is a %s.', ticket._id);
+    ticket.estado = estado;
+    if(!ticket) return;
+
+    Ticket.findByIdAndUpdate(ticket._id,ticket,  function (err, data) {
+      console.log(err);
+      if (!data) {
+       
+          console.log(`Ticket id=${ticket._id} no se puede actualizar!`)
+      } else {
+          console.log(`Ticket id=${ticket._id} se actualizo`)
+      }
+    })
+    .catch(err => {
+        message: "No se puede borrar id=" + id
+    });
+  });
+}
+};
+
+
+
+exports.deleteByTicketFunction = (req) => {
+  const id = req;
+  console.log("FUNCION " + id)
+
+  Ticket.findOne({ 'ticket': id }, function (err, ticket) {
+    if (err) return handleError(err);
+    console.log('%s %s is a %s.', ticket._id);
+
+    Ticket.findByIdAndRemove(ticket._id,  function (err, data) {
+      if (!data) {
+       
+          console.log(`Ticket id=${ticket._id} no se puede borrar!`)
+      } else {
+          console.log(`Ticket id=${ticket._id} se borro`)
+      }
+    })
+    .catch(err => {
+        message: "No se puede borrar id=" + id
+    });
+  });
+};
+
+
+exports.deleteByTicket = (req, res) => {
+  const id = req.params.id;
+  console.log(req)
+
+  Ticket.findOne({ 'ticket': id }, function (err, ticket) {
+    if (err) return handleError(err);
+    // Prints "Space Ghost is a talk show host".
+    console.log('%s %s is a %s.', ticket._id);
+
+    Ticket.findByIdAndRemove(ticket._id, { useFindAndModify: false })
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Ticket id=${ticket._id} no se puede borrar!`
+        });
+      } else {
+        res.send({
+          message: `Ticket id=${ticket._id} fue eliminado!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "No se puede borrar id=" + id
+      });
+    });
+  });
+
+  
+};
+
 exports.delete = (req, res) => {
   const id = req.params.id;
 
@@ -128,7 +210,10 @@ exports.delete = (req, res) => {
 exports.deleteAll = (req, res) => {
   Ticket.deleteMany({})
     .then(data => {
-      atencionNormalCountCaja,atencionPreferencialCajaCount, atencionNormalServCount,atencionPreferencialServCount = 1;
+      atencionNormalCountCaja= 1;
+      atencionPreferencialCajaCount = 1;
+      atencionNormalServCount = 1;
+      atencionPreferencialServCount = 1;
       turnosNormalesCaja.length = 0;
       turnosPreferencialesCaja.length = 0;
       turnosPreferencialesCaja.length = 0;

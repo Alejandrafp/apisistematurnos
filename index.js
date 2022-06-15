@@ -1,13 +1,14 @@
 const app = require('express')();
 const express = require("express");
 const cors = require("cors");
-const { turnosNormalesCaja, turnosPreferencialesCaja, turnosNormalesServ, turnosPreferencialesServ } = require("./config/global.variables");
+const { turnosNormalesCaja, turnosPreferencialesCaja, turnosNormalesServ, turnosPreferencialesServ ,eliminarCaja,eliminarServ} = require("./config/global.variables");
+const {updateByTicketFunction} = require("./controllers/ticket.controller")
 var corsOptions = {
   origin: "http://localhost:4200"
 };
 const db = require("./models");
 var userCount = 0;
-var userTurnoActualInt = 10;
+var userTurnoActualInt = 0;
 
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
@@ -53,6 +54,14 @@ io.on('connection', (socket) => {
   });
 
   socket.on('siguienteTurnoCaja', () => {
+    // deleteByTicketFunction("CN2")
+    // updateByTicketFunction("CN1",2);
+    if(eliminarCaja.length){
+      console.log(eliminarCaja);
+      var ticketEliminar = eliminarCaja[0];
+      updateByTicketFunction(ticketEliminar,2);
+      eliminarCaja.shift();
+    }
     var siguienteTurno = "";
     if (!turnosNormalesCaja.length && !turnosPreferencialesCaja.length) {
       io.emit('turnoActual', `0`);
@@ -60,16 +69,26 @@ io.on('connection', (socket) => {
     }
     if (turnosPreferencialesCaja.length) {
       siguienteTurno = `${turnosPreferencialesCaja[0]}`;
+      updateByTicketFunction(siguienteTurno,1)
+      eliminarCaja.push(siguienteTurno);
       var i = turnosPreferencialesCaja.shift();
       io.emit('turnoActual', `${siguienteTurno}`);
-      return
+      return;
     }
     siguienteTurno = `${turnosNormalesCaja[0]}`;
+    updateByTicketFunction(siguienteTurno,1)
+    eliminarCaja.push(siguienteTurno);
     var i = turnosNormalesCaja.shift();
     io.emit('turnoActual', `${siguienteTurno}`);
   });
 
   socket.on('siguienteTurnoServ', () => {
+    if(eliminarServ.length){
+      console.log(eliminarServ);
+      var ticketEliminar = eliminarServ[0];
+      updateByTicketFunction(ticketEliminar,2);
+      eliminarServ.shift();
+    }
     var siguienteTurno = "";
     if (!turnosNormalesServ.length && !turnosPreferencialesServ.length) {
       io.emit('turnoActual', `0`);
@@ -77,11 +96,15 @@ io.on('connection', (socket) => {
     }
     if (turnosPreferencialesServ.length) {
       siguienteTurno = `${turnosPreferencialesServ[0]}`;
+      updateByTicketFunction(siguienteTurno,1)
+      eliminarServ.push(siguienteTurno);
       var i = turnosPreferencialesServ.shift();
       io.emit('turnoActual', `${siguienteTurno}`);
       return
     }
     siguienteTurno = `${turnosNormalesServ[0]}`;
+    updateByTicketFunction(siguienteTurno,1)
+    eliminarServ.push(siguienteTurno);
     var i = turnosNormalesServ.shift();
     io.emit('turnoActual', `${siguienteTurno}`);
   });

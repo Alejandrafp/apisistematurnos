@@ -6,3 +6,6 @@ exports.turnosNormalesServ = [];
 exports.turnosPreferencialesServ = [];
 exports.atencionNormalServCount = 1;
 exports.atencionPreferencialServCount = 1;
+
+exports.eliminarCaja = [];
+exports.eliminarServ = [];
